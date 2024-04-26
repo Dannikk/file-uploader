@@ -33,6 +33,8 @@ def download(client, file):
 
 def paginator(client):
     files = []
+    if 'Contents' not in client.list_objects(Bucket='bucket-0'):
+        return files
     for key in client.list_objects(Bucket='bucket-0')['Contents']:
         file_name = key['Key']
         # print(file_name)

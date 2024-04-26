@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import StringIO
 from main import get_client, paginator, printer
+from streamlit_ace import st_ace
 from boto3 import s3
 
 
@@ -23,8 +24,20 @@ else:
 
 with upload_tab:
     uploaded_file = st.file_uploader("Выберите файл для загрузки")
+
+    # Spawn a new Ace editor
     if uploaded_file:
-        st.write(uploaded_file.readline().decode('utf-8'))
+        # st.code(StringIO(uploaded_file.getvalue().decode("utf-8")).read(),
+        #         language='python',
+        #         line_numbers=12)
+        content = st_ace(value=StringIO(uploaded_file.getvalue().decode("utf-8")).read(),
+                         min_lines=12,
+                         theme="solarized_dark",
+                         max_lines=25,
+                         height=300,
+                         readonly=True,
+                         )
+        # st.write(content)
     button_upload_disabled = True
     st.session_state.buttonOFF = True
     if uploaded_file is not None:
