@@ -27,15 +27,15 @@ def upload(client, path: str):
     print(client.upload_file(path, 'bucket-0', path.split('/')[-1]))
 
 
-def download(client):
-    print(client.download_file('bucket-0', 'test_file_other.txt', 'test_file_other_downloaded.txt'))
+def download(client, file):
+    print(client.download_file('bucket-0', file, 'new_downloaded.txt'))
 
 
 def paginator(client):
     files = []
     for key in client.list_objects(Bucket='bucket-0')['Contents']:
         file_name = key['Key']
-        print(file_name)
+        # print(file_name)
         files.append(file_name)
     return files
 
@@ -44,6 +44,10 @@ def load_config():
     with open("./config/config.yaml", 'r') as file:
         config = yaml.safe_load(file)
     return config
+
+
+def printer(*args):
+    print("I'm in printer", args)
 
 
 if __name__ == '__main__':
