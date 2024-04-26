@@ -55,8 +55,4 @@ def printer(*args):
 if __name__ == '__main__':
     print(os.listdir("../"))
     client = get_client()
-
-
-    # upload(client, "./test_file_other.txt")
     paginator(client)
-    # download(client)

@@ -1,9 +1,7 @@
 import streamlit as st
-import pandas as pd
 from io import StringIO
 from main import get_client, paginator, printer
 from streamlit_ace import st_ace
-from boto3 import s3
 
 
 def on_click_upload_button():
@@ -15,7 +13,6 @@ upload_tab, download_tab = st.tabs(["Upload", "Download"])
 client = None
 if 'client' not in st.session_state:
     client = get_client()
-    # print(client)
     st.session_state['client'] = client
     print("Successfully created client")
 else:
@@ -25,19 +22,6 @@ else:
 with upload_tab:
     uploaded_file = st.file_uploader("Выберите файл для загрузки")
 
-    # Spawn a new Ace editor
-    if uploaded_file:
-        # st.code(StringIO(uploaded_file.getvalue().decode("utf-8")).read(),
-        #         language='python',
-        #         line_numbers=12)
-        content = st_ace(value=StringIO(uploaded_file.getvalue().decode("utf-8")).read(),
-                         min_lines=12,
-                         theme="solarized_dark",
-                         max_lines=25,
-                         height=300,
-                         readonly=True,
-                         )
-        # st.write(content)
     button_upload_disabled = True
     st.session_state.buttonOFF = True
     if uploaded_file is not None:
@@ -57,8 +41,17 @@ with upload_tab:
                 print(uploaded_file, dir(uploaded_file))
                 st.success('Файл успешно загружен')
 
-    # st.write("Before button: ", button_upload_disabled)
-    # clicked =
+            if uploaded_file:
+                try:
+                    content = st_ace(value=StringIO(uploaded_file.getvalue().decode("utf-8")).read(),
+                                     min_lines=12,
+                                     theme="solarized_dark",
+                                     max_lines=25,
+                                     height=300,
+                                     readonly=True,
+                                     )
+                except BaseException as e:
+                    print(e)
 
 with download_tab:
     files = paginator(client)
@@ -77,7 +70,7 @@ with download_tab:
         button_disabled = False
     # print("disabled: ", button_disabled)
     st.download_button('Скачать',
-                       'test_file_other.txt',
+                       'some_file.txt',
                        disabled=button_disabled,
                        file_name=file2download,
                        on_click=printer,
