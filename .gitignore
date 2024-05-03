@@ -2,3 +2,6 @@
 .idea
 config/config.yaml
 file_uploader/__pycache__/main.cpython-311.pyc
+file-uploader-js/.vscode/
+file-uploader-js/.vscode/launch.json
+file-uploader-js/server/__debug_bin356866658
