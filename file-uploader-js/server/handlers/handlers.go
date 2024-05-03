@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"os"
+	"strings"
 
 	"main/models"
 
@@ -13,6 +16,7 @@ func Upload(c *fiber.Ctx) error {
 	form, err := c.MultipartForm()
 	if err != nil {
 		fmt.Println("Error", err)
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
 	fileMap := form.File
 	if len(fileMap) == 0 {
@@ -45,7 +49,7 @@ func Upload(c *fiber.Ctx) error {
 	}()
 
 	if _, err := fo.Write(buf); err != nil {
-		panic(err)
+		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(models.UploadQueryParams{Name: newName})
@@ -60,7 +64,28 @@ func Download(c *fiber.Ctx) error {
 	if params.Path == "" {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
-
 	fmt.Printf("Download params: %v\n", params)
-	return c.Status(fiber.StatusOK).SendString(params.Path+"__downloaded")
+
+	buf, err := os.ReadFile(params.Path)
+	if err != nil {
+		log.Println(err)
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+
+	contentTypeFull := http.DetectContentType(buf)
+	fmt.Println(contentTypeFull)
+
+	contentType := strings.Split(contentTypeFull, " ")[0]
+	if contentType[len(contentType)-1] == ';' {
+		contentType = contentType[:len(contentType)-1]
+	}
+
+	//base64Buf := make([]byte, base64.StdEncoding.EncodedLen(len(buf)))
+	//
+	//base64.StdEncoding.Encode(base64Buf, buf)
+
+	return c.Status(fiber.StatusOK).JSON(models.DownloadResponse{
+		ContentType: contentType,
+		File:        buf,
+	})
 }

@@ -15,28 +15,35 @@ function handleDownloadClick(event) {
 
   const fileName = fileNameInput.value;
 
-  const url = `http://127.0.0.1:8080/download?` + new URLSearchParams({ path: fileName });
+  const url = `http://127.0.0.1:8080/download?` + new URLSearchParams({ path: fileName }).toString();
 
   fetch(url)
-  .then(alert);
-}
+  .then(res => res.json()).then(({file, content_type}) => {
 
+    const link = document.createElement('a');
+    const div = document.createElement(('div'))
+    link.href = `data:${content_type};base64,${file}`;
+    link.download = fileName;
+    link.textContent = `Download ${fileName}`;
+
+    div.appendChild(link)
+    link.addEventListener('click', ()=> link.remove())
+    document.body.appendChild(div);
+  });
+}
 
 function handleSubmit(event) {
   event.preventDefault();
   event.stopPropagation();
 
-  console.log('form submitted');
-
   uploadFiles(event.target);
-
 }
 
 function uploadFiles(currentForm) {
   const url = 'http://127.0.0.1:8080/upload';
   const method = 'post';
 
-  const data = new FormData(currentForm);debugger
+  const data = new FormData(currentForm);
 
   fetch(url, {
     method,    
@@ -58,15 +65,4 @@ function displayFileName(response) {
 
 function updateStatusMessage(text) {
   statusMessage.textContent = text;
-}
-
-function saveFile(file) {
-  const a = document.createElement('a');
-  a.href = file.files;
-
-  // a.download = "new_file.txt";
-  // a.textContent = "Download";
-  a.textContent = file.files.file
-
-  document.body.appendChild(a);
 }
