@@ -21,7 +21,7 @@ func main() {
 	app.Get("/download", handlers.Download)
 
 	go func() {
-		if err := app.Listen("127.0.0.1:8080"); err != nil {
+		if err := app.Listen(":8080"); err != nil {
 			log.Fatalf("failed to listen: %v", err)
 		}
 	}()

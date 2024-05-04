@@ -1,0 +1,21 @@
+services:
+  file-uploader:
+    build: .
+    container_name: fileU
+    ports:
+      - 8080:8080
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - type: volume
+        source: mydata
+        target: /data
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./static
+        target: /opt/app/static
+
+volumes:
+  mydata:

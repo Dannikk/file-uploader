@@ -53,16 +53,5 @@ function uploadFiles(currentForm) {
 }
 
 function displayFileName(response) {
-  // const display = document.createElement('displayName');
-
-  // // display.href = response.name;
-  // display.textContent = response.name;
-
-  // document.body.appendChild(display);
-
   statusMessage.textContent = response.name;
-}
-
-function updateStatusMessage(text) {
-  statusMessage.textContent = text;
 }

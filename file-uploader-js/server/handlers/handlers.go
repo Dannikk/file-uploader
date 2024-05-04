@@ -37,9 +37,11 @@ func Upload(c *fiber.Ctx) error {
 	}
 
 	newName := "new_" + fileName
+
 	fo, err := os.Create(newName)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 
 	defer func() {
