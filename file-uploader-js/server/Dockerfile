@@ -4,14 +4,21 @@
  ## Build the application from source
  ##
 
- FROM golang:alpine
+FROM golang:alpine
 
- RUN apk update && apk add bash
+RUN apk update && apk add bash
 
- WORKDIR /app
+WORKDIR /app
 
- COPY . /app
+COPY ./handlers handlers
+COPY ./models models
+COPY ./main.go ./go.mod ./
 
- RUN go build -o fileUploader
+RUN ls -al
+
+
+RUN go mod tidy
+
+RUN go build -o fileUploader
 
  ENTRYPOINT ["./fileUploader"]

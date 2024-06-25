@@ -1,0 +1,48 @@
+# syntax=docker/dockerfile:1
+
+##
+## Build the application from source
+##
+
+FROM golang:1.22.2-alpine3.19 AS build-stage
+
+RUN apk update && apk add bash
+
+#RUN addgroup --g 1000 groupcontainer
+#RUN adduser -u 1000 -G groupcontainer -h /home/containeruser -D containeruser
+
+#USER containeruser
+
+WORKDIR /app/
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app_bin ./main.go
+
+##
+## Run the tests in the container
+##
+
+FROM build-stage AS run-test-stage
+
+RUN go test -v ./...
+
+##
+## Deploy the application binary into a lean image
+##
+
+FROM alpine
+
+
+WORKDIR /
+
+COPY --from=build-stage /app_bin /app_bin
+
+EXPOSE 8080
+
+#USER nonroot:nonroot
+
+ENTRYPOINT ["./app_bin"]
